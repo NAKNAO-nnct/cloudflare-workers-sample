@@ -1,19 +1,27 @@
 import { Router } from 'itty-router';
+import { loadCSV } from './lib/loadCsv';
 
 // now let's create a router (note the lack of "new")
 const router = Router();
 
-// GET collection index
-router.get('/api/todos', () => new Response('Todos Index!'));
+// 奈良高専吹奏楽部 API
+const gasApiEndpoint = 'https://script.google.com/macros/s/AKfycbxl_iWjgcunOEu0tLvKlnLC4MM9CpcsmNu_L_O1yHWp1x2XHnWN/exec?key=';
 
-// GET item
-router.get('/api/todos/:id', ({ params }) => new Response(`Todo #${params.id}`));
+router.get('/api/v3/about', async ({ query, params }) => {
+	const url = gasApiEndpoint + 'about';
 
-// POST to the collection (we'll use async here)
-router.post('/api/todos', async (request) => {
-	const content = await request.json();
+	const response = await loadCSV(url, array => {
+		return {
+			'question': array[0],
+			'answer': array[1],
+		}
+	}, 1);
 
-	return new Response('Creating Todo: ' + JSON.stringify(content));
+	response.forEach(line => {
+		line['answer'] = line['answer'].replace(/<cms-br>/g, '\n');
+	});
+
+	return new Response(JSON.stringify(response));
 });
 
 // 404 for everything else
