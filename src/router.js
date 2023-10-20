@@ -21,10 +21,16 @@ router.get('/api/v3/about', async ({ query, params }) => {
 		line['answer'] = line['answer'].replace(/<cms-br>/g, '\n');
 	});
 
-	return new Response(JSON.stringify(response));
+	return new Response(JSON.stringify(response), { headers: {
+		'Content-Type': 'application/json',
+	} });
+});
+
+const notFoundJson = JSON.stringify({
+	'error': 'Not Found',
 });
 
 // 404 for everything else
-router.all('*', () => new Response('Not Found.', { status: 404 }));
+router.all('*', () => new Response(notFoundJson, { status: 404, headers: { 'Content-Type': 'application/json' } }));
 
 export default router;
