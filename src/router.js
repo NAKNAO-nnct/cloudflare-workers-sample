@@ -7,6 +7,11 @@ const router = Router();
 // 奈良高専吹奏楽部 API
 const gasApiEndpoint = 'https://script.google.com/macros/s/AKfycbxl_iWjgcunOEu0tLvKlnLC4MM9CpcsmNu_L_O1yHWp1x2XHnWN/exec?key=';
 
+const responseHeader = {
+	'Content-Type': 'application/json',
+	'Access-Control-Allow-Origin': 'https://nitncwind.org',
+};
+
 router.get('/api/v3/about', async ({ query, params }) => {
 	const url = gasApiEndpoint + 'about';
 
@@ -21,9 +26,7 @@ router.get('/api/v3/about', async ({ query, params }) => {
 		line['answer'] = line['answer'].replace(/<cms-br>/g, '\n');
 	});
 
-	return new Response(JSON.stringify(response), { headers: {
-		'Content-Type': 'application/json',
-	} });
+	return new Response(JSON.stringify(response), { headers: responseHeader});
 });
 
 const notFoundJson = JSON.stringify({
@@ -31,6 +34,6 @@ const notFoundJson = JSON.stringify({
 });
 
 // 404 for everything else
-router.all('*', () => new Response(notFoundJson, { status: 404, headers: { 'Content-Type': 'application/json' } }));
+router.all('*', () => new Response(notFoundJson, { status: 404, headers: responseHeader }));
 
 export default router;
